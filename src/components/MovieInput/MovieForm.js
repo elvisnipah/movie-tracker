@@ -1,11 +1,29 @@
 import React, { useState } from "react";
 
-function MovieForm() {
+function MovieForm(props) {
   const [movieDetails, setMovieDetails] = useState({
     title: "",
     rating: "",
     watchDate: "",
   });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const submittedData = {
+      ...movieDetails,
+      watchDate: new Date(movieDetails.watchDate),
+    };
+    console.log(submittedData);
+
+    props.onSaveMovie(submittedData);
+
+    setMovieDetails({
+      title: "",
+      rating: "",
+      watchDate: "",
+    });
+  };
 
   const handleTitleChange = (event) => {
     setMovieDetails((prevState) => {
@@ -29,14 +47,14 @@ function MovieForm() {
     setMovieDetails((prevState) => {
       return {
         ...prevState,
-        date: event.target.value,
+        watchDate: event.target.value,
       };
     });
   };
 
   return (
-    <form>
-      <div className="flex flex-wrap gap-2 mb-2 text-left justify-around">
+    <form onSubmit={handleSubmit} className="flex flex-col">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 mb-2 text-left justify-around">
         <div>
           <label htmlFor="title" className="font-bold mb-1 block">
             Title
@@ -75,13 +93,14 @@ function MovieForm() {
             name="date"
             id="date"
             min="2019-01-01"
+            max="2023-12-31"
             className="p-1 rounded-lg border-black border-2 w-[20rem] max-w-max"
             onChange={handleDateChange}
-            value={movieDetails.date}
+            value={movieDetails.watchDate}
           />
         </div>
       </div>
-      <div className="text-right">
+      <div>
         <button
           type="submit"
           className="cursor-pointer px-8 py-4 border-black border-2 rounded-xl mr-4 bg-teal-300 hover:bg-lime-300"

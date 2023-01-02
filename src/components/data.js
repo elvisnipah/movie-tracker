@@ -4,19 +4,19 @@ const data = [
     id: nanoid(),
     title: "Interstellar",
     rating: "9",
-    date: new Date("05 October 2011 14:48 UTC"),
+    watchDate: new Date("05 October 2023"),
   },
   {
     id: nanoid(),
     title: "Knives Out",
     rating: "9",
-    date: new Date("05 October 2011 14:48 UTC"),
+    watchDate: new Date("05 October 2021"),
   },
   {
     id: nanoid(),
     title: "The Day That The Martian Came",
     rating: "7",
-    date: new Date("05 October 2011 14:48 UTC"),
+    watchDate: new Date("05 October 2020"),
   },
 ];
 
