@@ -23,6 +23,8 @@ function MovieForm(props) {
       rating: "",
       watchDate: "",
     });
+
+    props.closeTab();
   };
 
   const handleTitleChange = (event) => {
@@ -100,10 +102,17 @@ function MovieForm(props) {
           />
         </div>
       </div>
-      <div>
+      <div className="sm:self-center">
+        <button
+          className="cursor-pointer px-4 py-2 rounded-xl mr-4 bg-[#3C3B3B] hover:bg-lime-300 text-white hover:text-black"
+          onClick={props.closeTab}
+          type="button"
+        >
+          Cancel
+        </button>
         <button
           type="submit"
-          className="cursor-pointer px-8 py-4 border-black border-2 rounded-xl mr-4 bg-teal-300 hover:bg-lime-300"
+          className="cursor-pointer px-4 py-2 rounded-xl mr-4 bg-[#3C3B3B] hover:bg-lime-300 text-white hover:text-black"
         >
           Add Movie
         </button>

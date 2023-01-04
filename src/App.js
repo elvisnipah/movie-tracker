@@ -9,15 +9,17 @@ function App() {
 
   const [filterStatus, setFilterStatus] = useState(false);
 
+  const [filteredMovies, setFilteredMovies] = useState([]);
+
+  const [filteredYear, setFilteredYear] = useState("All");
+
+  const [tabClicked, setTabClicked] = useState(false);
+
   const handleAddMovie = (movie) => {
     setMovies((prevMovies) => {
       return [movie, ...prevMovies];
     });
   };
-
-  const [filteredMovies, setFilteredMovies] = useState([]);
-
-  const [filteredYear, setFilteredYear] = useState("All");
 
   useEffect(() => {
     const displayFilteredMovies = () => {
@@ -73,9 +75,29 @@ function App() {
     }
   };
 
+  const closeTab = () => {
+    setTabClicked(false);
+  };
+
+  const openTab = () => {
+    setTabClicked(true);
+  };
+
   return (
-    <div className="bg-teal-300 grow p-3 flex flex-col gap-5 items-center font-inter justify-center">
-      <NewMovie onAddMovie={handleAddMovie} />
+    <div className="bg-teal-300 grow flex flex-col gap-5 items-center font-inter justify-center">
+      <div>
+        {tabClicked && (
+          <NewMovie onAddMovie={handleAddMovie} closeTab={closeTab} />
+        )}
+        {!tabClicked && (
+          <button
+            className="bg-white p-4 border-black border-2 rounded-lg hover:bg-lime-300"
+            onClick={openTab}
+          >
+            Add New Movie
+          </button>
+        )}
+      </div>
       <MovieFilter
         onChangeFilter={handleFilterChange}
         selected={filteredYear}

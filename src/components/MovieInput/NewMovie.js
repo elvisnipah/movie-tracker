@@ -12,8 +12,8 @@ function NewMovie(props) {
     props.onAddMovie(movieData);
   };
   return (
-    <div className="p-2 my-8 w-[50rem] max-w-[95%] rounded-xl text-center bg-white">
-      <MovieForm onSaveMovie={handleSaveMovie} />
+    <div>
+      <MovieForm onSaveMovie={handleSaveMovie} closeTab={props.closeTab} />
     </div>
   );
 }
