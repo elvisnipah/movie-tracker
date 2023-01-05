@@ -2,6 +2,7 @@ import MovieItem from "./components/MovieItem";
 import data from "./components/data";
 import NewMovie from "./components/MovieInput/NewMovie";
 import MovieFilter from "./components/MovieFilter";
+import MovieChart from "./components/MovieChart";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -84,7 +85,7 @@ function App() {
   };
 
   return (
-    <div className="bg-teal-300 grow flex flex-col gap-5 items-center font-inter justify-center">
+    <div className="bg-teal-300 grow flex flex-col gap-5 items-center font-inter justify-center p-4">
       <div>
         {tabClicked && (
           <NewMovie onAddMovie={handleAddMovie} closeTab={closeTab} />
@@ -102,6 +103,7 @@ function App() {
         onChangeFilter={handleFilterChange}
         selected={filteredYear}
       />
+      {filterStatus && <MovieChart movies={filteredMovies} />}
       {filterStatus ? filteredMoviesCollection : allMoviesCollection}
     </div>
   );
