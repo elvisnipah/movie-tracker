@@ -14,7 +14,6 @@ function MovieForm(props) {
       ...movieDetails,
       watchDate: new Date(movieDetails.watchDate),
     };
-    console.log(submittedData);
 
     props.onSaveMovie(submittedData);
 
