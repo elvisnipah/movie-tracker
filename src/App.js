@@ -1,112 +1,160 @@
 import MovieItem from "./components/MovieItem";
-import data from "./components/data";
 import NewMovie from "./components/MovieInput/NewMovie";
 import MovieFilter from "./components/MovieFilter";
 import MovieChart from "./components/MovieChart";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [movies, setMovies] = useState(data);
+    const localStorageMoviesData =
+        JSON.parse(localStorage.getItem("movieData")) || [];
 
-  const [filterStatus, setFilterStatus] = useState(false);
+    const [movies, setMovies] = useState(localStorageMoviesData);
 
-  const [filteredMovies, setFilteredMovies] = useState([]);
+    const [filterStatus, setFilterStatus] = useState(false);
 
-  const [filteredYear, setFilteredYear] = useState("All");
+    const [filteredMovies, setFilteredMovies] = useState([]);
 
-  const [tabClicked, setTabClicked] = useState(false);
+    const [filteredYear, setFilteredYear] = useState("All");
 
-  const handleAddMovie = (movie) => {
-    setMovies((prevMovies) => {
-      return [movie, ...prevMovies];
-    });
-  };
+    const [movieFormVisible, setMovieFormVisible] = useState(false);
 
-  useEffect(() => {
-    const displayFilteredMovies = () => {
-      const filterCollection = movies.filter(
-        (movie) => movie.watchDate.getFullYear().toString() === filteredYear
-      );
-      setFilteredMovies(filterCollection);
+    const handleAddMovie = (movie) => {
+        setMovies((prevMovies) => {
+            return [movie, ...prevMovies];
+        });
     };
 
-    displayFilteredMovies();
-  }, [filteredYear, movies]);
+    const lastOfYear = (id) => {
+        const movie = movies.filter((movie) => movie.id === id);
+        const movieYear = movie[0].watchDate.getFullYear();
+        const remainingMovies = movies.filter((movie) => movie.id !== id);
+        for (let i = 0; i < remainingMovies.length; i++) {
+            if (remainingMovies[i].watchDate.getFullYear() === movieYear) {
+                return false;
+            }
+        }
+        return true;
+    };
 
-  const allMoviesCollection = movies.map((movie) => {
-    return (
-      <MovieItem
-        title={movie.title}
-        rating={movie.rating}
-        date={movie.watchDate}
-        key={movie.id}
-      />
-    );
-  });
+    const handleDeleteMovie = (id) => {
+        if (lastOfYear(id)) {
+            handleFilterChange("All");
+        }
+        const restOfMovies = movies.filter((movie) => movie.id !== id);
+        setMovies(restOfMovies);
+    };
 
-  const checkFilteredMovies = () => {
-    if (filteredMovies.length === 0) {
-      return (
-        <p className="text-3xl text-gray-600 font-bold">
-          No Movies Watched This Year
-        </p>
-      );
-    }
-    return filteredMovies.map((movie) => {
-      return (
-        <MovieItem
-          title={movie.title}
-          rating={movie.rating}
-          date={movie.watchDate}
-          key={movie.id}
-        />
-      );
+    // store movie data in localstorage
+    useEffect(() => {
+        localStorage.setItem("movieData", JSON.stringify(movies));
+    }, [movies]);
+
+    // create the filtered movies array
+    useEffect(() => {
+        const displayFilteredMovies = () => {
+            const filterCollection = movies.filter(
+                (movie) =>
+                    new Date(movie.watchDate).getFullYear().toString() ===
+                    filteredYear
+            );
+            setFilteredMovies(filterCollection);
+        };
+
+        displayFilteredMovies();
+    }, [filteredYear, movies]);
+
+    const allMoviesCollection = movies.map((movie) => {
+        return (
+            <MovieItem
+                title={movie.title}
+                rating={movie.rating}
+                date={movie.watchDate}
+                key={movie.id}
+                id={movie.id}
+                deleteMovie={handleDeleteMovie}
+            />
+        );
     });
-  };
 
-  const filteredMoviesCollection = checkFilteredMovies();
+    const getFilterOptions = () => {
+        const movieYears = movies.map((movie) => {
+            return [new Date(movie.watchDate).getFullYear()];
+        });
+        const options = [];
+        for (let i = 0; i < movieYears.length; i++) {
+            if (!options.includes(movieYears[i].toString())) {
+                options.push(movieYears[i].toString());
+            }
+        }
+        options.sort();
+        return options;
+    };
 
-  const handleFilterChange = (selectedYear) => {
-    if (selectedYear === "All") {
-      setFilteredYear("All");
-      setFilterStatus(false);
-    } else {
-      setFilteredYear(selectedYear);
-      setFilterStatus(true);
-    }
-  };
+    const checkFilteredMovies = () => {
+        if (filteredMovies.length === 0) {
+            return null;
+        }
+        return filteredMovies.map((movie) => {
+            return (
+                <MovieItem
+                    title={movie.title}
+                    rating={movie.rating}
+                    date={movie.watchDate}
+                    key={movie.id}
+                    id={movie.id}
+                    deleteMovie={handleDeleteMovie}
+                />
+            );
+        });
+    };
 
-  const closeTab = () => {
-    setTabClicked(false);
-  };
+    const handleFilterChange = (selectedYear) => {
+        if (selectedYear === "All") {
+            setFilteredYear("All");
+            setFilterStatus(false);
+        } else {
+            setFilteredYear(selectedYear);
+            setFilterStatus(true);
+        }
+    };
 
-  const openTab = () => {
-    setTabClicked(true);
-  };
+    let filteredMoviesCollection = checkFilteredMovies();
 
-  return (
-    <div className="bg-teal-300 grow flex flex-col gap-5 items-center font-inter justify-center p-4">
-      <div>
-        {tabClicked && (
-          <NewMovie onAddMovie={handleAddMovie} closeTab={closeTab} />
-        )}
-        {!tabClicked && (
-          <button
-            className="bg-white p-4 border-black border-2 rounded-lg hover:bg-lime-300"
-            onClick={openTab}
-          >
-            Add New Movie
-          </button>
-        )}
-      </div>
-      <MovieFilter
-        onChangeFilter={handleFilterChange}
-        selected={filteredYear}
-      />
-      {filterStatus && <MovieChart movies={filteredMovies} />}
-      {filterStatus ? filteredMoviesCollection : allMoviesCollection}
-    </div>
-  );
+    const closeMovieForm = () => {
+        setMovieFormVisible(false);
+    };
+
+    const openMovieForm = () => {
+        setMovieFormVisible(true);
+    };
+
+    return (
+        <div className="bg-[#CECECE] grow flex flex-col gap-5 items-center font-inter justify-center p-4">
+            <div>
+                {movieFormVisible && (
+                    <NewMovie
+                        onAddMovie={handleAddMovie}
+                        closeMovieForm={closeMovieForm}
+                    />
+                )}
+                {!movieFormVisible && (
+                    <button
+                        className="bg-[#3C3B3B] border-[#3C3B3B] text-white p-3 rounded-lg hover:bg-gray-300 hover:text-gray-700 border-2 hover:border-gray-900 font-bold"
+                        onClick={openMovieForm}
+                    >
+                        Add New Movie
+                    </button>
+                )}
+            </div>
+            <MovieFilter
+                onChangeFilter={handleFilterChange}
+                selected={filteredYear}
+                options={getFilterOptions}
+            />
+            {filterStatus && <MovieChart movies={filteredMovies} />}
+            {filterStatus ? filteredMoviesCollection : allMoviesCollection}
+        </div>
+    );
 }
 
 export default App;
