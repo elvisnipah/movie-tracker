@@ -26,10 +26,13 @@ function App() {
 
     const lastOfYear = (id) => {
         const movie = movies.filter((movie) => movie.id === id);
-        const movieYear = movie[0].watchDate.getFullYear();
+        const movieYear = new Date(movie[0].watchDate).getFullYear();
         const remainingMovies = movies.filter((movie) => movie.id !== id);
         for (let i = 0; i < remainingMovies.length; i++) {
-            if (remainingMovies[i].watchDate.getFullYear() === movieYear) {
+            if (
+                new Date(remainingMovies[i].watchDate).getFullYear() ===
+                movieYear
+            ) {
                 return false;
             }
         }
